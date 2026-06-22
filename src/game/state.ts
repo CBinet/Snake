@@ -39,3 +39,17 @@ export class GameState {
     this.pendingDirection = dir
   }
 }
+
+export function resetGame(state: GameState): void {
+  const center = Math.floor(GRID_SIZE / 2)
+  state.snake = [
+    { x: center, y: center },
+    { x: center - 1, y: center },
+    { x: center - 2, y: center },
+  ]
+  state.direction = 'right'
+  state.pendingDirection = null
+  state.food = { x: center + 5, y: center }
+  state.score = 0
+  state.status = 'running'
+}

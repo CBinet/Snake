@@ -5,6 +5,7 @@ import { step } from './game/logic.ts'
 import { createLoop } from './game/loop.ts'
 import { render } from './render/renderer.ts'
 import { renderOverlay } from './render/overlay.ts'
+import { attachKeyboardControls } from './input/keyboard.ts'
 
 const canvas = document.querySelector<HTMLCanvasElement>('#game-canvas')!
 canvas.width = GRID_SIZE * CELL_SIZE
@@ -14,10 +15,6 @@ const ctx = canvas.getContext('2d')!
 ctx.imageSmoothingEnabled = false
 
 const state = new GameState()
-// TEMPORARY: input wiring doesn't exist yet (next milestone), so force
-// 'running' here to visually verify rendering. Remove this line once
-// src/input/keyboard.ts drives status transitions from idle -> running.
-state.status = 'running'
 
 const TICK_INTERVAL_MS = 150
 
@@ -27,15 +24,12 @@ function draw(): void {
 }
 
 const loop = createLoop(
-  () => {
-    step(state)
-    if (state.status === 'gameover') {
-      loop.stop()
-    }
-    draw()
-  },
+  () => step(state),
   () => TICK_INTERVAL_MS,
+  draw,
 )
+
+attachKeyboardControls(state)
 
 draw()
 loop.start()

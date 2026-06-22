@@ -43,7 +43,7 @@ function drawCenteredLines(
   })
 }
 
-export function renderOverlay(ctx: CanvasRenderingContext2D, state: GameState, highScore = 0): void {
+export function renderOverlay(ctx: CanvasRenderingContext2D, state: GameState, highScore: number): void {
   const canvasSize = GRID_SIZE * CELL_SIZE
 
   drawScoreReadout(ctx, state.score, highScore)

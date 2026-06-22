@@ -1,6 +1,8 @@
 // Drives the fixed-tick update loop (requestAnimationFrame-based) that
 // advances game state on a timer and triggers rendering each frame.
 
+const MAX_CATCH_UP_TICKS = 2
+
 export function createLoop(onTick: () => void, getIntervalMs: () => number, onFrame?: () => void) {
   let rafId: number | null = null
   let lastTimestamp: number | null = null
@@ -8,8 +10,8 @@ export function createLoop(onTick: () => void, getIntervalMs: () => number, onFr
 
   function frame(timestamp: number): void {
     if (lastTimestamp !== null) {
-      accumulatedMs += timestamp - lastTimestamp
       const intervalMs = getIntervalMs()
+      accumulatedMs = Math.min(accumulatedMs + (timestamp - lastTimestamp), intervalMs * MAX_CATCH_UP_TICKS)
       while (accumulatedMs >= intervalMs) {
         onTick()
         accumulatedMs -= intervalMs

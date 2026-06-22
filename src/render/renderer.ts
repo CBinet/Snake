@@ -5,6 +5,7 @@ import { GRID_SIZE, CELL_SIZE, COLORS } from '../config.ts'
 import type { GameState } from '../game/state.ts'
 
 const SEGMENT_INSET = 2
+const SEGMENT_BORDER_WIDTH = 2
 
 function drawGrid(ctx: CanvasRenderingContext2D): void {
   ctx.strokeStyle = COLORS.gridLine
@@ -33,7 +34,7 @@ function drawSnake(ctx: CanvasRenderingContext2D, snake: GameState['snake']): vo
     ctx.fillRect(x, y, CELL_SIZE, CELL_SIZE)
 
     ctx.strokeStyle = COLORS.snakeBorder
-    ctx.lineWidth = SEGMENT_INSET
+    ctx.lineWidth = SEGMENT_BORDER_WIDTH
     ctx.strokeRect(
       x + SEGMENT_INSET / 2,
       y + SEGMENT_INSET / 2,

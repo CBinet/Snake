@@ -7,7 +7,7 @@ export function getHighScore(): number {
     const raw = localStorage.getItem(HIGH_SCORE_KEY)
     if (raw === null) return 0
     const parsed = Number(raw)
-    return Number.isFinite(parsed) ? parsed : 0
+    return Number.isInteger(parsed) && Number.isFinite(parsed) ? parsed : 0
   } catch {
     return 0
   }

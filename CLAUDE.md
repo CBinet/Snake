@@ -18,15 +18,15 @@ There are no test or lint scripts in this project.
 
 Entry point is `index.html` → `src/main.ts`, which sizes the canvas (`GRID_SIZE * CELL_SIZE`) and grabs the 2D context. Constants (grid size, cell size, color palette) live in `src/config.ts`; shared types (`Point`, `Direction`, `GameStatus`) live in `src/types.ts`.
 
-The intended module layout (most are currently stub files containing only a planning comment, with no implementation yet — check each file's actual contents before assuming behavior exists):
+The module layout (all modules are fully implemented across 6 completed milestones):
 
-- `src/game/state.ts` — authoritative game state (snake body, food position, score, `GameStatus`) plus creation/reset helpers.
-- `src/game/logic.ts` — pure functions for movement, collision detection (walls/self), food consumption, and growth.
-- `src/game/difficulty.ts` — tick speed/difficulty scaling as score/length increases.
-- `src/game/loop.ts` — fixed-tick update loop (requestAnimationFrame-based) that advances state and triggers rendering.
-- `src/input/keyboard.ts` — keyboard event handling → `Direction` changes and pause/resume/restart controls.
-- `src/render/renderer.ts` — draws grid, snake, and food onto the canvas each frame from game state.
-- `src/render/overlay.ts` — UI overlays (score, idle/paused/game-over messaging) on top of the canvas.
-- `src/storage/highscore.ts` — persists/retrieves high score via `localStorage`.
+- `src/game/state.ts` — the `GameState` class (snake body, food position, score, `GameStatus`, pending direction) plus the `resetGame` free function; both initial construction and reset share a single `initState` helper so the two paths can't drift apart. `setPendingDirection` guards against 180° neck reversal by checking the already-queued `pendingDirection` (falling back to the committed `direction`).
+- `src/game/logic.ts` — pure functions for movement (`getNextHead`), collision detection (`isWallCollision`, `isSelfCollision`), food spawning (`spawnFood`), and the `step` function that advances state by one tick.
+- `src/game/difficulty.ts` — `getTickIntervalMs` scales tick speed down (faster gameplay) as score increases, clamped to a minimum interval.
+- `src/game/loop.ts` — `createLoop` drives a fixed-tick update loop (requestAnimationFrame-based) with accumulator-based catch-up (clamped to bound worst-case stutter after a long throttle/background period), calling `onTick` on each tick and `onFrame` every animation frame.
+- `src/input/keyboard.ts` — `attachKeyboardControls` translates keydown events into `Direction` changes and pause/resume/restart/start transitions, invoking an optional `onStatusChange` callback so the caller can force an immediate redraw on status transitions.
+- `src/render/renderer.ts` — `render` draws the grid, snake, and food onto the canvas each frame from game state.
+- `src/render/overlay.ts` — `renderOverlay` draws UI overlays (score readout, idle/paused/game-over messaging) on top of the canvas.
+- `src/storage/highscore.ts` — `getHighScore`/`setHighScoreIfBeaten` persist and retrieve the high score via `localStorage`, with validation against malformed/non-integer stored values.
 
-When implementing one of these stubs, follow the division of responsibility implied by its existing header comment rather than merging concerns across files (e.g. keep collision/movement logic out of the renderer, keep canvas drawing out of `state.ts`).
+Follow the existing division of responsibility when modifying these files rather than merging concerns across them (e.g. keep collision/movement logic out of the renderer, keep canvas drawing out of `state.ts`).

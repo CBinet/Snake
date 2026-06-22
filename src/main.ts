@@ -40,7 +40,7 @@ const loop = createLoop(
   draw,
 )
 
-attachKeyboardControls(state)
+attachKeyboardControls(state, draw)
 
 draw()
 loop.start()

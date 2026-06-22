@@ -12,35 +12,7 @@ const OPPOSITE_DIRECTION: Record<Direction, Direction> = {
   right: 'left',
 }
 
-export class GameState {
-  snake: Point[]
-  direction: Direction
-  pendingDirection: Direction | null
-  food: Point
-  score: number
-  status: GameStatus
-
-  constructor() {
-    const center = Math.floor(GRID_SIZE / 2)
-    this.snake = [
-      { x: center, y: center },
-      { x: center - 1, y: center },
-      { x: center - 2, y: center },
-    ]
-    this.direction = 'right'
-    this.pendingDirection = null
-    this.food = { x: center + 5, y: center }
-    this.score = 0
-    this.status = 'idle'
-  }
-
-  setPendingDirection(dir: Direction): void {
-    if (dir === OPPOSITE_DIRECTION[this.direction]) return
-    this.pendingDirection = dir
-  }
-}
-
-export function resetGame(state: GameState): void {
+function initState(state: GameState, status: GameStatus): void {
   const center = Math.floor(GRID_SIZE / 2)
   state.snake = [
     { x: center, y: center },
@@ -51,5 +23,27 @@ export function resetGame(state: GameState): void {
   state.pendingDirection = null
   state.food = { x: center + 5, y: center }
   state.score = 0
-  state.status = 'running'
+  state.status = status
+}
+
+export class GameState {
+  snake: Point[] = []
+  direction: Direction = 'right'
+  pendingDirection: Direction | null = null
+  food: Point = { x: 0, y: 0 }
+  score = 0
+  status: GameStatus = 'idle'
+
+  constructor() {
+    initState(this, 'idle')
+  }
+
+  setPendingDirection(dir: Direction): void {
+    if (dir === OPPOSITE_DIRECTION[this.pendingDirection ?? this.direction]) return
+    this.pendingDirection = dir
+  }
+}
+
+export function resetGame(state: GameState): void {
+  initState(state, 'running')
 }

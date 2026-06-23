@@ -16,7 +16,7 @@ There are no test or lint scripts in this project.
 
 ## Architecture
 
-Entry point is `index.html` → `src/main.ts`, which sizes the canvas (`GRID_SIZE * CELL_SIZE`) and grabs the 2D context. Constants (grid size, cell size, color palette) live in `src/config.ts`; shared types (`Point`, `Direction`, `GameStatus`) live in `src/types.ts`.
+Entry point is `index.html` → `src/main.ts`, which sizes the canvas (`GRID_SIZE * CELL_SIZE`), grabs the 2D context, wires `createLoop`'s `onTick`/`onFrame` to `step`/`draw`, and calls `attachKeyboardControls(state, draw)` — passing `draw` as the `onStatusChange` callback so a key that changes `GameStatus` (start/restart/pause/resume) repaints immediately instead of waiting for the next animation frame. Constants (grid size, cell size, color palette) live in `src/config.ts`; shared types (`Point`, `Direction`, `GameStatus`) live in `src/types.ts`.
 
 The module layout (all modules are fully implemented across 6 completed milestones):
 

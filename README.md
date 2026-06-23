@@ -44,15 +44,19 @@ src/
   types.ts                shared types: Point, Direction, GameStatus
   game/
     state.ts               GameState class (snake body, direction, food, score, status)
-                            plus resetGame() for restarting a run
+                            plus resetGame() for restarting a run; both share an internal
+                            initState() helper so construction and reset can't drift apart
     logic.ts                pure functions: movement, wall/self collision, food spawning,
                             and the step() function that advances state by one tick
     difficulty.ts           getTickIntervalMs(score) — maps score to tick speed
     loop.ts                 createLoop(): fixed-tick update loop driven by
                             requestAnimationFrame, decoupling simulation speed from
-                            frame rate
+                            frame rate; clamps catch-up to at most 2 ticks per frame so a
+                            backgrounded/throttled tab doesn't fire a burst of ticks
   input/
-    keyboard.ts              keydown handling: movement keys, start/restart, pause/resume
+    keyboard.ts              keydown handling: movement keys, start/restart, pause/resume;
+                            takes an optional onStatusChange callback so the caller can
+                            redraw immediately on a status transition
   render/
     renderer.ts              draws the grid, snake, and food onto the canvas each frame
     overlay.ts                draws the score readout and idle/paused/game-over messages
@@ -63,10 +67,12 @@ src/
 
 ## Deployment
 
-This repo includes a GitHub Actions workflow (`.github/workflows/deploy.yml`) that builds the project with Vite and deploys it to GitHub Pages on every push to `master`.
+This repo includes a GitHub Actions workflow (`.github/workflows/deploy.yml`) that builds the project with Vite and deploys it to GitHub Pages on every push to `main`.
+
+The canonical copy of this repo lives at [github.com/CBinet/Snake](https://github.com/CBinet/Snake) (remote `origin`), whose default branch is `main`.
 
 To use it for your own fork/copy:
 
 1. Push the repository to GitHub as a repo named **Snake**. The Vite `base` path is hardcoded to `/Snake/` in `vite.config.ts`, so the repo name must match (or you'll need to update that path).
 2. In the repo's Settings → Pages, set the source to **GitHub Actions**.
-3. Push to `master` — the workflow builds the site and publishes `dist/` to Pages automatically.
+3. Push to `main` — the workflow builds the site and publishes `dist/` to Pages automatically. You can also trigger it manually via the Actions tab (`workflow_dispatch`).

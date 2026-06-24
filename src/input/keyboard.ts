@@ -22,6 +22,8 @@ const MOVEMENT_KEYS: Record<string, Direction> = {
 
 export function attachKeyboardControls(state: GameState, onStatusChange?: () => void): void {
   window.addEventListener('keydown', (event) => {
+    if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement) return
+
     const direction = MOVEMENT_KEYS[event.key]
     if (direction !== undefined) {
       event.preventDefault()

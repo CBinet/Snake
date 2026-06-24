@@ -5,11 +5,22 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview"
+    "build": "tsc && vite build && tsc -p tsconfig.server.json",
+    "preview": "vite preview",
+    "server": "tsx server/index.ts",
+    "start": "cross-env NODE_ENV=production tsx server/index.ts"
   },
   "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/express": "^5.0.6",
+    "@types/node": "^26.0.0",
+    "cross-env": "^10.1.0",
+    "tsx": "^4.22.4",
     "typescript": "~6.0.2",
     "vite": "^8.0.12"
+  },
+  "dependencies": {
+    "better-sqlite3": "^12.11.1",
+    "express": "^5.2.1"
   }
 }

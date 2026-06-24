@@ -6,8 +6,11 @@ import { getTickIntervalMs } from './game/difficulty.ts'
 import { createLoop } from './game/loop.ts'
 import { render } from './render/renderer.ts'
 import { renderOverlay } from './render/overlay.ts'
+import { renderLeaderboardPanel } from './render/leaderboard-panel.ts'
 import { attachKeyboardControls } from './input/keyboard.ts'
+import { showNamePromptIfQualifying } from './input/name-prompt.ts'
 import { getHighScore, setHighScoreIfBeaten } from './storage/highscore.ts'
+import { refreshTopScores, getCachedTopScores } from './leaderboard/leaderboard-store.ts'
 
 const canvas = document.querySelector<HTMLCanvasElement>('#game-canvas')!
 canvas.width = GRID_SIZE * CELL_SIZE
@@ -20,18 +23,47 @@ const state = new GameState()
 
 let highScore = getHighScore()
 let previousStatus = state.status
+let runStartedAt = Date.now()
 
 function draw(): void {
   render(ctx, state)
   renderOverlay(ctx, state, highScore)
+  if (state.status === 'idle' || state.status === 'gameover') {
+    renderLeaderboardPanel(ctx, getCachedTopScores().entries)
+  }
+}
+
+function onStatusChange(): void {
+  const enteredRunning = previousStatus !== 'running' && state.status === 'running'
+  const enteredGameover = previousStatus !== 'gameover' && state.status === 'gameover'
+  const enteredIdleOrGameover =
+    previousStatus !== 'idle' && previousStatus !== 'gameover' &&
+    (state.status === 'idle' || state.status === 'gameover')
+
+  if (enteredRunning) {
+    runStartedAt = Date.now()
+  }
+
+  if (enteredGameover) {
+    highScore = setHighScoreIfBeaten(state.score)
+    showNamePromptIfQualifying(state.score, Date.now() - runStartedAt, () => {
+      void refreshTopScores()
+    })
+  }
+
+  if (enteredIdleOrGameover) {
+    void refreshTopScores()
+  }
+
+  previousStatus = state.status
+  draw()
 }
 
 function tick(): void {
   step(state)
-  if (previousStatus !== 'gameover' && state.status === 'gameover') {
-    highScore = setHighScoreIfBeaten(state.score)
+  if (state.status !== previousStatus) {
+    onStatusChange()
   }
-  previousStatus = state.status
 }
 
 const loop = createLoop(
@@ -40,7 +72,8 @@ const loop = createLoop(
   draw,
 )
 
-attachKeyboardControls(state, draw)
+attachKeyboardControls(state, onStatusChange)
 
+void refreshTopScores()
 draw()
 loop.start()

@@ -18,6 +18,14 @@ function drawScoreReadout(ctx: CanvasRenderingContext2D, score: number, highScor
   ctx.fillText(`HIGH ${highScore}`, 8, 26)
 }
 
+function drawTopScoresLabel(ctx: CanvasRenderingContext2D, canvasSize: number): void {
+  ctx.textAlign = 'right'
+  ctx.textBaseline = 'top'
+  ctx.font = `bold 12px ${MONOSPACE_FONT}`
+  ctx.fillStyle = COLORS.textPrimary
+  ctx.fillText('TOP SCORES', canvasSize - 8, 8)
+}
+
 function drawCenteredBackdrop(ctx: CanvasRenderingContext2D, canvasSize: number, height: number): void {
   ctx.fillStyle = COLORS.overlayBackdrop
   ctx.fillRect(0, (canvasSize - height) / 2, canvasSize, height)
@@ -47,6 +55,10 @@ export function renderOverlay(ctx: CanvasRenderingContext2D, state: GameState, h
   const canvasSize = GRID_SIZE * CELL_SIZE
 
   drawScoreReadout(ctx, state.score, highScore)
+
+  if (state.status === 'idle' || state.status === 'gameover') {
+    drawTopScoresLabel(ctx, canvasSize)
+  }
 
   if (state.status === 'idle') {
     drawCenteredLines(ctx, canvasSize, [

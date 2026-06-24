@@ -26,3 +26,6 @@ Thumbs.db
 
 # Review artifacts
 reviews/
+
+# Server runtime data
+server/data/

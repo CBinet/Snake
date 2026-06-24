@@ -14,6 +14,10 @@ A browser-based Snake game built with Vite + TypeScript, rendered to a `<canvas>
 
 There are no test or lint scripts in this project.
 
+## Verifying changes
+
+Do not start the dev server, open a browser, or write/run Playwright (or any other browser-automation) scripts to verify UI or frontend changes. Verify with type-checking (`npm run build`) and code review only, then report the task as complete. This overrides the default guidance to test UI changes in a browser before reporting completion.
+
 ## Architecture
 
 Entry point is `index.html` → `src/main.ts`, which sizes the canvas (`GRID_SIZE * CELL_SIZE`), grabs the 2D context, wires `createLoop`'s `onTick`/`onFrame` to `step`/`draw`, and calls `attachKeyboardControls(state, draw)` — passing `draw` as the `onStatusChange` callback so a key that changes `GameStatus` (start/restart/pause/resume) repaints immediately instead of waiting for the next animation frame. Constants (grid size, cell size, color palette) live in `src/config.ts`; shared types (`Point`, `Direction`, `GameStatus`) live in `src/types.ts`.
